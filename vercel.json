@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/__l5e/assets-v1/:match*",
+      "destination": "https://pertejklasave.lovable.app/__l5e/assets-v1/:match*"
+    }
+  ]
+}
