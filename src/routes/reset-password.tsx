@@ -44,12 +44,12 @@ function ResetPassword() {
 
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (password.length < 8) return toast.error("Fjalëkalimi duhet të ketë të paktën 8 karaktere.");
-    if (password !== confirm) return toast.error("Fjalëkalimet nuk përputhen.");
+    if (password.length < 8) { toast.error("Fjalëkalimi duhet të ketë të paktën 8 karaktere."); return; }
+    if (password !== confirm) { toast.error("Fjalëkalimet nuk përputhen."); return; }
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
-    if (error) return toast.error("Fjalëkalimi nuk u ndryshua. Kërko një lidhje të re.");
+    if (error) { toast.error("Fjalëkalimi nuk u ndryshua. Kërko një lidhje të re."); return; }
     toast.success("Fjalëkalimi u ndryshua.");
     void navigate({ to: "/", replace: true });
   }

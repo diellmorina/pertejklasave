@@ -41,8 +41,8 @@ export async function uploadWithProgress(
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
   if (!token) throw new Error("Seanca ka skaduar. Hyr përsëri.");
-  const baseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-  const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+  const baseUrl = import.meta.env["VITE_SUPABASE_URL"] as string;
+  const apiKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string;
 
   await new Promise<void>((resolve, reject) => {
     const upload = new tus.Upload(file, {

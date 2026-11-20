@@ -43,9 +43,9 @@ function Register() {
   async function submit(e: FormEvent) {
     e.preventDefault();
     const name = username.trim();
-    if (!USERNAME_RE.test(name)) return toast.error("Emri i përdoruesit duhet të ketë 2–32 shkronja, numra, pika ose viza.");
-    if (password.length < 8) return toast.error("Fjalëkalimi duhet të ketë të paktën 8 karaktere.");
-    if (password !== confirm) return toast.error("Fjalëkalimet nuk përputhen.");
+    if (!USERNAME_RE.test(name)) { toast.error("Emri i përdoruesit duhet të ketë 2–32 shkronja, numra, pika ose viza."); return; }
+    if (password.length < 8) { toast.error("Fjalëkalimi duhet të ketë të paktën 8 karaktere."); return; }
+    if (password !== confirm) { toast.error("Fjalëkalimet nuk përputhen."); return; }
     setBusy(true);
     const { error } = await supabase.auth.signUp({
       email: email.trim(),

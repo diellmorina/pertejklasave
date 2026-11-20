@@ -265,21 +265,21 @@ function CommentItem({ comment, liked, onChange, canReply }: { comment: CommentR
     setBusy(true);
     const { error } = await supabase.from("comments").update({ body }).eq("id", comment.id);
     setBusy(false);
-    if (error) return toast.error(friendlyError(error.message));
+    if (error) { toast.error(friendlyError(error.message)); return; }
     setEditing(false);
     onChange();
   }
 
   async function remove() {
     const { error } = await supabase.from("comments").delete().eq("id", comment.id);
-    if (error) return toast.error(friendlyError(error.message));
+    if (error) { toast.error(friendlyError(error.message)); return; }
     toast.success("Komenti u fshi.");
     onChange();
   }
 
   async function toggleHidden() {
     const { error } = await supabase.from("comments").update({ hidden: !comment.hidden }).eq("id", comment.id);
-    if (error) return toast.error(friendlyError(error.message));
+    if (error) { toast.error(friendlyError(error.message)); return; }
     toast.success(comment.hidden ? "Komenti u shfaq." : "Komenti u fsheh.");
     onChange();
   }

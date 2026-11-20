@@ -31,7 +31,7 @@ function Forgot() {
     setBusy(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/reset-password` });
     setBusy(false);
-    if (error) return toast.error("Email-i nuk u dërgua. Provo përsëri pas pak.");
+    if (error) { toast.error("Email-i nuk u dërgua. Provo përsëri pas pak."); return; }
     setSent(true);
   }
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import heroStudio from "@/assets/hero-studio.jpg.asset.json";
 
-export function AuthShell({ eyebrow, title, subtitle, children }: { eyebrow: string; title: string; subtitle?: string; children: ReactNode }) {
+export function AuthShell({ eyebrow, title, subtitle, children }: { eyebrow: string; title: string; subtitle?: string | undefined; children: ReactNode }) {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-28">
       <img src={heroStudio.url} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-40" />
