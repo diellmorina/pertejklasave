@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthShell, Divider } from "@/components/site/AuthShell";
 import { GoogleButton } from "@/components/site/GoogleButton";
+import { AppleButton } from "@/components/site/AppleButton";
 import { useAuth } from "@/hooks/use-auth";
 import { safeRedirect } from "@/lib/safe-redirect";
 
@@ -63,6 +64,7 @@ function Login() {
   return (
     <AuthShell eyebrow="Mirë se u ktheve" title="Hyr në llogari" subtitle="Pëlqe episodet, komento dhe ndiq çdo publikim të ri.">
       <GoogleButton onSignedIn={() => undefined} />
+      <div className="mt-3"><AppleButton onSignedIn={() => undefined} /></div>
       <Divider />
       <form onSubmit={submit} className="space-y-4">
         <div className="space-y-2">

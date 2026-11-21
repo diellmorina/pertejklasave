@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthShell, Divider } from "@/components/site/AuthShell";
 import { GoogleButton } from "@/components/site/GoogleButton";
+import { AppleButton } from "@/components/site/AppleButton";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/register")({
@@ -75,6 +76,7 @@ function Register() {
   return (
     <AuthShell eyebrow="Bashkohu" title="Krijo llogari" subtitle="Falas. Për të pëlqyer episodet dhe për të komentuar.">
       <GoogleButton onSignedIn={() => void navigate({ to: "/" })} label="Regjistrohu me Google" />
+      <div className="mt-3"><AppleButton onSignedIn={() => void navigate({ to: "/" })} label="Regjistrohu me Apple" /></div>
       <Divider />
       <form onSubmit={submit} className="space-y-4">
         <div className="space-y-2">
