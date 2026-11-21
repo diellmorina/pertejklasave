@@ -106,7 +106,7 @@ function Upload() {
       const existing = rows.find((r) => r.id === form.id);
       if (form.status === "published" && existing?.status !== "published") patch["published_at"] = new Date().toISOString();
       const { error } = form.id
-        ? await supabase.from("episodes").update(patch).eq("id", form.id)
+        ? await supabase.from("episodes").update(patch as never).eq("id", form.id)
         : await supabase.from("episodes").insert(patch as never);
       if (error) throw error;
       toast.success(form.id ? "Episodi u përditësua." : "Episodi u ngarkua!");
@@ -120,7 +120,7 @@ function Upload() {
     const status = r.status === "published" ? "draft" : "published";
     const patch: Record<string, unknown> = { status };
     if (status === "published") patch["published_at"] = new Date().toISOString();
-    const { error } = await supabase.from("episodes").update(patch).eq("id", r.id);
+    const { error } = await supabase.from("episodes").update(patch as never).eq("id", r.id);
     if (error) { toast.error("Ndryshimi dështoi."); return; }
     await load();
   };
