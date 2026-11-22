@@ -45,6 +45,28 @@ function Upload() {
   const [tp, setTp] = useState(0);
   const [busy, setBusy] = useState(false);
 
+  // While on the admin panel, point the install metadata at the admin
+  // manifest/icons so "Add to Home Screen" creates a distinct "PK Admin" app.
+  useEffect(() => {
+    const swaps: Array<{ el: Element; attr: string; original: string | null }> = [];
+    const setAttr = (selector: string, attr: string, value: string) => {
+      const el = document.head.querySelector(selector);
+      if (!el) return;
+      swaps.push({ el, attr, original: el.getAttribute(attr) });
+      el.setAttribute(attr, value);
+    };
+    setAttr('link[rel="manifest"]', "href", "/manifest-admin.webmanifest");
+    setAttr('link[rel="apple-touch-icon"]', "href", "/admin-apple-touch-icon.png");
+    setAttr('meta[name="apple-mobile-web-app-title"]', "content", "PK Admin");
+    setAttr('meta[name="application-name"]', "content", "PK Admin");
+    return () => {
+      for (const { el, attr, original } of swaps) {
+        if (original === null) el.removeAttribute(attr);
+        else el.setAttribute(attr, original);
+      }
+    };
+  }, []);
+
   const load = async () => {
     const { data } = await supabase.from("episodes")
       .select("id,title,episode_number,description,status,featured,views,likes_count,created_at,thumbnail_url,video_path,thumbnail_path")
