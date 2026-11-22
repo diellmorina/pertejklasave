@@ -7,3 +7,4 @@
 - [ ] Comments (replies, likes, realtime, moderation) + episode likes + view counts
 - [ ] Admin dashboard /upload (overview, upload, manage, comments, settings)
 - [ ] 404, SEO head tags, verify flows
+- [x] Add to Home Screen support (iPhone, Android, desktop) with the "P" icon
