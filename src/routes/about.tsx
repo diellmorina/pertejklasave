@@ -36,7 +36,7 @@ function About() {
     { label: "TikTok", href: settings.tiktok_url },
     { label: "Spotify", href: settings.spotify_url },
     { label: "Facebook", href: settings.facebook_url },
-  ];
+  ].filter((s): s is { label: string; href: string } => !!s.href);
 
   return (
     <div>
@@ -103,32 +103,28 @@ function About() {
                 PËRTEJ KLASAVE realizohet nga nxënësit, me mbështetjen e stafit të shkollës. Ke një ide për një episod
                 ose dëshiron të jesh mysafir? Na shkruaj.
               </p>
-              <div className="mt-6 flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4 text-primary" />
-                {settings.contact_email ? (
+              {settings.contact_email ? (
+                <div className="mt-6 flex items-center gap-2 text-sm">
+                  <Mail className="h-4 w-4 text-primary" />
                   <a href={`mailto:${settings.contact_email}`} className="font-medium hover:text-primary">{settings.contact_email}</a>
-                ) : (
-                  <span className="text-muted-foreground">[Email-i i kontaktit do të shtohet së shpejti]</span>
-                )}
-              </div>
+                </div>
+              ) : null}
             </div>
             <div>
-              <h3 className="eyebrow mb-4">Rrjetet sociale</h3>
-              <ul className="grid grid-cols-2 gap-2">
-                {socials.map((s) => (
-                  <li key={s.label}>
-                    {s.href ? (
-                      <a href={s.href} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl border border-border bg-background/60 px-4 py-3 text-sm font-medium transition-colors hover:border-primary">
-                        {s.label} <span aria-hidden className="text-primary">↗</span>
-                      </a>
-                    ) : (
-                      <span className="flex items-center justify-between rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-                        {s.label} <span className="text-xs">së shpejti</span>
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              {socials.length ? (
+                <>
+                  <h3 className="eyebrow mb-4">Rrjetet sociale</h3>
+                  <ul className="grid grid-cols-2 gap-2">
+                    {socials.map((s) => (
+                      <li key={s.label}>
+                        <a href={s.href} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl border border-border bg-background/60 px-4 py-3 text-sm font-medium transition-colors hover:border-primary">
+                          {s.label} <span aria-hidden className="text-primary">↗</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
             </div>
           </div>
         </div>
