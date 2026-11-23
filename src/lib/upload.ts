@@ -51,7 +51,7 @@ export async function uploadWithProgress(
       headers: { authorization: `Bearer ${token}`, apikey: apiKey, "x-upsert": "false" },
       uploadDataDuringCreation: true,
       removeFingerprintOnSuccess: true,
-      metadata: { bucketName: bucket, objectName: path, contentType: file.type, cacheControl: "3600" },
+      metadata: { bucketName: bucket, objectName: path, contentType: file.type, cacheControl: "31536000" },
       chunkSize: 6 * 1024 * 1024,
       onError: (err) => reject(err instanceof Error ? err : new Error(String(err))),
       onProgress: (sent, total) => onProgress(total ? Math.round((sent / total) * 100) : 0),
@@ -59,6 +59,32 @@ export async function uploadWithProgress(
     });
     upload.start();
   });
+}
+
+/**
+ * Shrinks a cover image before upload (max 1600px wide, WebP) so pages load fast.
+ * Falls back to the original file if the browser can't convert it.
+ */
+export async function compressImage(file: File, maxWidth = 1600, quality = 0.8): Promise<File> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, maxWidth / bitmap.width);
+    const w = Math.round(bitmap.width * scale);
+    const h = Math.round(bitmap.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    bitmap.close();
+    const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/webp", quality));
+    if (!blob || blob.type !== "image/webp" || blob.size >= file.size) return file;
+    const name = file.name.replace(/\.[^.]+$/, "") + ".webp";
+    return new File([blob], name, { type: "image/webp" });
+  } catch {
+    return file;
+  }
 }
 
 export async function signedUrl(bucket: string, path: string): Promise<string> {

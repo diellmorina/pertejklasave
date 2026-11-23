@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { buildPath, readVideoDuration, signedUrl, uploadWithProgress, validateFile } from "@/lib/upload";
+import { buildPath, compressImage, readVideoDuration, signedUrl, uploadWithProgress, validateFile } from "@/lib/upload";
 
 export const Route = createFileRoute("/_authenticated/upload")({
   head: () => ({
@@ -121,8 +121,9 @@ function Upload() {
         if (duration) patch["duration_seconds"] = duration;
       }
       if (thumb) {
-        const path = buildPath("thumbs", thumb);
-        await uploadWithProgress("episode-thumbnails", path, thumb, setTp);
+        const small = await compressImage(thumb);
+        const path = buildPath("thumbs", small);
+        await uploadWithProgress("episode-thumbnails", path, small, setTp);
         patch["thumbnail_path"] = path; patch["thumbnail_url"] = await signedUrl("episode-thumbnails", path);
       }
       const existing = rows.find((r) => r.id === form.id);
