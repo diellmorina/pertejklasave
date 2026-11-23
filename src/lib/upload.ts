@@ -93,6 +93,18 @@ export async function signedUrl(bucket: string, path: string): Promise<string> {
   return data.signedUrl;
 }
 
+/**
+ * Moves an episode video to a fresh file name so every play link shared
+ * while it was published stops working once it is hidden.
+ */
+export async function rotateVideoPath(oldPath: string): Promise<string> {
+  const ext = oldPath.split(".").pop() ?? "mp4";
+  const next = `episodes/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+  const { error } = await supabase.storage.from("episode-videos").move(oldPath, next);
+  if (error) throw new Error("Videoja nuk u fsheh.");
+  return next;
+}
+
 /** Reads the duration of a local video file in seconds (best effort). */
 export function readVideoDuration(file: File): Promise<number | null> {
   return new Promise((resolve) => {

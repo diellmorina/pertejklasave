@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { buildPath, compressImage, readVideoDuration, signedUrl, uploadWithProgress, validateFile } from "@/lib/upload";
+import { buildPath, compressImage, readVideoDuration, rotateVideoPath, signedUrl, uploadWithProgress, validateFile } from "@/lib/upload";
 
 export const Route = createFileRoute("/_authenticated/upload")({
   head: () => ({
@@ -117,7 +117,7 @@ function Upload() {
         const path = buildPath("episodes", video);
         const duration = await readVideoDuration(video);
         await uploadWithProgress("episode-videos", path, video, setVp);
-        patch["video_path"] = path; patch["video_url"] = await signedUrl("episode-videos", path);
+        patch["video_path"] = path; patch["video_url"] = null;
         if (duration) patch["duration_seconds"] = duration;
       }
       if (thumb) {
@@ -127,11 +127,16 @@ function Upload() {
         patch["thumbnail_path"] = path; patch["thumbnail_url"] = await signedUrl("episode-thumbnails", path);
       }
       const existing = rows.find((r) => r.id === form.id);
+      if (!video && existing?.status === "published" && form.status !== "published" && existing.video_path) {
+        patch["video_path"] = await rotateVideoPath(existing.video_path);
+      }
       if (form.status === "published" && existing?.status !== "published") patch["published_at"] = new Date().toISOString();
       const { error } = form.id
         ? await supabase.from("episodes").update(patch as never).eq("id", form.id)
         : await supabase.from("episodes").insert(patch as never);
       if (error) throw error;
+      // A replaced video is deleted so old play links for it stop working.
+      if (video && existing?.video_path) await supabase.storage.from("episode-videos").remove([existing.video_path]);
       toast.success(form.id ? "Episodi u përditësua." : "Episodi u ngarkua!");
       reset(); await load();
     } catch (err) {
@@ -143,6 +148,9 @@ function Upload() {
     const status = r.status === "published" ? "draft" : "published";
     const patch: Record<string, unknown> = { status };
     if (status === "published") patch["published_at"] = new Date().toISOString();
+    try {
+      if (status === "draft" && r.video_path) patch["video_path"] = await rotateVideoPath(r.video_path);
+    } catch { toast.error("Ndryshimi dështoi."); return; }
     const { error } = await supabase.from("episodes").update(patch as never).eq("id", r.id);
     if (error) { toast.error("Ndryshimi dështoi."); return; }
     await load();

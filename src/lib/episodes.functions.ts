@@ -21,6 +21,9 @@ function publicClient() {
   });
 }
 
+/** Video play links expire after a few hours so unpublished episodes stop playing. */
+const VIDEO_LINK_SECONDS = 60 * 60 * 6;
+
 export const listEpisodes = createServerFn({ method: "GET" }).handler(async (): Promise<EpisodeSummary[]> => {
   const sb = publicClient();
   const { data, error } = await sb
@@ -40,9 +43,9 @@ export const getEpisode = createServerFn({ method: "GET" })
   .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }): Promise<{ episode: EpisodeSummary; related: EpisodeSummary[] } | null> => {
     const sb = publicClient();
-    const { data: episode, error } = await sb
+    const { data: row, error } = await sb
       .from("episodes")
-      .select(EPISODE_COLUMNS)
+      .select(`${EPISODE_COLUMNS},video_path`)
       .eq("id", data.id)
       .eq("status", "published")
       .maybeSingle();
@@ -50,7 +53,14 @@ export const getEpisode = createServerFn({ method: "GET" })
       console.error("getEpisode", error);
       throw new Error("Episodi nuk u ngarkua.");
     }
-    if (!episode) return null;
+    if (!row) return null;
+    const { video_path, ...rest } = row as EpisodeSummary & { video_path: string | null };
+    const episode: EpisodeSummary = { ...rest, video_url: null };
+    if (video_path) {
+      // Short-lived play link; storage only signs files of currently published episodes.
+      const { data: signed } = await sb.storage.from("episode-videos").createSignedUrl(video_path, VIDEO_LINK_SECONDS);
+      episode.video_url = signed?.signedUrl ?? null;
+    }
     const { data: related } = await sb
       .from("episodes")
       .select(EPISODE_COLUMNS)
@@ -58,7 +68,7 @@ export const getEpisode = createServerFn({ method: "GET" })
       .neq("id", data.id)
       .order("published_at", { ascending: false, nullsFirst: false })
       .limit(8);
-    return { episode: episode as EpisodeSummary, related: (related ?? []) as EpisodeSummary[] };
+    return { episode, related: (related ?? []) as EpisodeSummary[] };
   });
 
 export const getSiteSettings = createServerFn({ method: "GET" }).handler(async (): Promise<SiteSettings> => {

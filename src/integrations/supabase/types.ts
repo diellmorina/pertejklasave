@@ -130,16 +130,19 @@ export type Database = {
       episode_views: {
         Row: {
           episode_id: string
+          ip_hash: string | null
           viewed_on: string
           viewer_key: string
         }
         Insert: {
           episode_id: string
+          ip_hash?: string | null
           viewed_on?: string
           viewer_key: string
         }
         Update: {
           episode_id?: string
+          ip_hash?: string | null
           viewed_on?: string
           viewer_key?: string
         }

@@ -29,6 +29,13 @@
       "when": 1795219821975,
       "tag": "0003_tighten_profiles_and_settings_read_access",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795444408192,
+      "tag": "0004_secure_views_and_episode_videos",
+      "breakpoints": true
     }
   ]
 }
