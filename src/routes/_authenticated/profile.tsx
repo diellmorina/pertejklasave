@@ -186,7 +186,15 @@ function SiteSettingsForm() {
       if (k.endsWith("_url") && val && !/^https:\/\//.test(val)) return void toast.error(`${label}: lidhja duhet të fillojë me https://`);
     }
     setBusy(true);
-    const patch = Object.fromEntries(FIELDS.map(([k]) => [k, values[k].trim() || null]));
+    const patch = {
+      school_name: values.school_name.trim() || null,
+      contact_email: values.contact_email.trim() || null,
+      facebook_url: values.facebook_url.trim() || null,
+      instagram_url: values.instagram_url.trim() || null,
+      youtube_url: values.youtube_url.trim() || null,
+      tiktok_url: values.tiktok_url.trim() || null,
+      spotify_url: values.spotify_url.trim() || null,
+    };
     const { error } = await supabase.from("site_settings").update(patch).eq("id", 1);
     setBusy(false);
     if (error) return void toast.error("Ruajtja dështoi.");
